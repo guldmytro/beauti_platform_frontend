@@ -22,7 +22,6 @@
                         <li class="menu__item">
                             <a href="">
                                 Бровист
-
                             </a>
                         </li>
                         <li class="menu__item">
@@ -106,7 +105,6 @@
                         </li>
                         <li class="menu__item">
                             <a href="">
-
                                 Другое
                             </a>
                         </li>
@@ -129,7 +127,11 @@
                     <button class="icon__btn icon__btn_bell">
                         <span>2</span>
                     </button>
-                    <button class="icon__btn icon__btn_enter" @click="openLoginPopup">Войти</button>
+
+                    <NuxtLink to="/account/" v-if="isAuthenticated" class="icon__btn icon__btn_enter">
+                        {{ userName }}
+                    </NuxtLink>
+                    <button v-else class="icon__btn icon__btn_enter" @click="openLoginPopup">Войти</button>
                 </div>
 
             </div>
@@ -139,9 +141,24 @@
 
 <script setup>
     import { UsePopupStore } from '@/stores/PopupStore';
+    import { storeToRefs } from 'pinia';
+    import { UseAuthStore } from '@/stores/AuthStore';
+    
     const popupStore = UsePopupStore();
+    const authStore = UseAuthStore();
+
+    const { isAuthenticated, userName } = storeToRefs(authStore);
     
     function openLoginPopup() {
         popupStore.openLoginPopup();
+    }
+    async function check() {
+        await authStore.setUserName();
+    }
+
+    onMounted: {
+        if (process.client) {
+            authStore.setUserName();
+        }
     }
 </script>

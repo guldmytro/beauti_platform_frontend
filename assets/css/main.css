@@ -4427,3 +4427,20 @@ path {
     word-wrap: break-word;
   }
 }
+
+/* nuxt */
+.login-error {
+  border-radius: 4px;
+  background-color: pink;
+  padding: 0 20px;
+  line-height: 40px;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+button {
+  transition: opacity 0.3s ease;
+}
+:disabled {
+  opacity: 0.6;
+}

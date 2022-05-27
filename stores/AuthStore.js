@@ -5,10 +5,11 @@ export const UseAuthStore = defineStore('AuthStore', {
     state: () => {
         return {
             isAuthenticated: false,
+            userName: null,
         }
     },
     actions: {
-        async authenticate(credentials) {
+        async authenticate(credentials, rememberMe) {
             const { $requests } = useNuxtApp();
             const { request } = $requests();
             try {
@@ -20,8 +21,10 @@ export const UseAuthStore = defineStore('AuthStore', {
                     body: JSON.stringify(credentials)
                 };
                 const respose = await request('/token/', options);
-                tokens.setTokens(respose?.access, respose?.refresh);
+                tokens.setTokens(respose?.access, respose?.refresh, rememberMe);
+                this.isAuthenticated = true;
                 return { 'status': 200 };
+
             } catch(e) {
                 const error = {
                     'status': e.message
@@ -33,6 +36,23 @@ export const UseAuthStore = defineStore('AuthStore', {
                 }
                 return error;
             }  
-        }
+        },
+        async setUserName() {
+            const { $requests } = useNuxtApp();
+            const requests = $requests();
+            const userID = tokens.getUserID();
+            
+            try {
+                const responce = await requests.requestWithToken(`/users/${userID}/`, {
+                    method: 'GET'
+                });
+                this.userName = responce[0]?.username;
+                this.isAuthenticated = true;
+                return {status: 200, message: responce?.username};
+            } catch(e) {
+                console.log(e);
+                return e;
+            }
+        },
     }
 });

@@ -3,12 +3,13 @@ const LOCAL_REFRESH_NAME = 'auth_refreshToken';
 const LOCAL_ACCESS_USERID = 'auth_username';
 const LOCAL_ACCESS_EXP = 'auth_accessExp';
 
-function setTokens(access, refresh) {
+function setTokens(access, refresh, rememberMe) {
     let accessData = getJWTPayload(access);
-    localStorage.setItem(LOCAL_ACCESS_NAME, access);
-    localStorage.setItem(LOCAL_REFRESH_NAME, refresh);
-    localStorage.setItem(LOCAL_ACCESS_USERID, accessData.user_id);
-    localStorage.setItem(LOCAL_ACCESS_EXP, accessData.exp);
+    const storage = rememberMe ? localStorage : sessionStorage;
+    storage.setItem(LOCAL_ACCESS_NAME, access);
+    storage.setItem(LOCAL_REFRESH_NAME, refresh);
+    storage.setItem(LOCAL_ACCESS_USERID, accessData.user_id);
+    storage.setItem(LOCAL_ACCESS_EXP, accessData.exp);
 }
 
 function cleanTokensData() {
@@ -16,14 +17,22 @@ function cleanTokensData() {
     localStorage.removeItem(LOCAL_REFRESH_NAME);
     localStorage.removeItem(LOCAL_ACCESS_USERID);
     localStorage.removeItem(LOCAL_ACCESS_EXP);
+    sessionStorage.removeItem(LOCAL_ACCESS_NAME);
+    sessionStorage.removeItem(LOCAL_REFRESH_NAME);
+    sessionStorage.removeItem(LOCAL_ACCESS_USERID);
+    sessionStorage.removeItem(LOCAL_ACCESS_EXP);
 }
 
 function getAccessToken() {
-    return localStorage.getItem(LOCAL_ACCESS_NAME);
+    return localStorage.getItem(LOCAL_ACCESS_NAME) || sessionStorage.getItem(LOCAL_ACCESS_NAME);
 }
 
 function getRefreshToken() {
-    return localStorage.getItem(LOCAL_REFRESH_NAME);
+    return localStorage.getItem(LOCAL_REFRESH_NAME) || sessionStorage.getItem(LOCAL_REFRESH_NAME);
+}
+
+function getUserID() {
+    return localStorage.getItem(LOCAL_ACCESS_USERID) || sessionStorage.getItem(LOCAL_ACCESS_USERID);
 }
 
 function getJWTPayload(token) {
@@ -48,4 +57,5 @@ export {
     cleanTokensData,
     getAccessToken,
     getRefreshToken,
+    getUserID,
 }
