@@ -24,10 +24,10 @@ export default defineNuxtPlugin(() => {
                             options.headers.Authorization = `Bearer ${accessToken}`;
                         }
                         return fetch(API_URL + url, options).then(async responce => {
-                            if (responce.status === 200) {
+                            if (responce.ok) {
                                 return responce.json();
                             }
-                            if (responce.status === 401) {
+                            if (!responce.ok) {
                                 if (recLevel > 0) {
                                     throw {code: 401, message: 'Access and Refresh token failed'};
                                 }
@@ -40,10 +40,9 @@ export default defineNuxtPlugin(() => {
                                         },
                                         body: JSON.stringify({'refresh': refreshToken})
                                     });
-                                    if (refreshRes.status === 200) {
+                                    if (refreshRes.ok) {
                                         const refJSON = await refreshRes.json();
                                         tokens.setTokens(refJSON.access, refJSON.refresh, true);
-                                        console.log(this);
                                         return await this.requestWithToken(url, options, recLevel + 1);
                                     }
                                     throw {code: 401, message: 'Refresh token expire'};

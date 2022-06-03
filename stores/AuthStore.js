@@ -5,7 +5,7 @@ export const UseAuthStore = defineStore('AuthStore', {
     state: () => {
         return {
             isAuthenticated: false,
-            userName: null,
+            user: null,
         }
     },
     actions: {
@@ -37,22 +37,32 @@ export const UseAuthStore = defineStore('AuthStore', {
                 return error;
             }  
         },
-        async setUserName() {
+        async setUser() {
+            if (this.isAuthenticated && this.user) {
+                return;
+            }
             const { $requests } = useNuxtApp();
             const requests = $requests();
             const userID = tokens.getUserID();
-            
+            if (!userID) {
+                return;
+            }
             try {
                 const responce = await requests.requestWithToken(`/users/${userID}/`, {
                     method: 'GET'
                 });
-                this.userName = responce[0]?.username;
+                this.user = {};
+                this.user.userName = responce?.username;
                 this.isAuthenticated = true;
+                console.log(responce);
                 return {status: 200, message: responce?.username};
             } catch(e) {
-                console.log(e);
                 return e;
             }
         },
+        resetUserData() {
+            this.isAuthenticated = false;
+            this.user = null
+        }
     }
 });

@@ -128,8 +128,8 @@
                         <span>2</span>
                     </button>
 
-                    <NuxtLink to="/account/" v-if="isAuthenticated" class="icon__btn icon__btn_enter">
-                        {{ userName }}
+                    <NuxtLink to="/account/" v-if="user" class="icon__btn icon__btn_enter">
+                        {{ user.userName }}
                     </NuxtLink>
                     <button v-else class="icon__btn icon__btn_enter" @click="openLoginPopup">Войти</button>
                 </div>
@@ -147,18 +147,15 @@
     const popupStore = UsePopupStore();
     const authStore = UseAuthStore();
 
-    const { isAuthenticated, userName } = storeToRefs(authStore);
+    const { isAuthenticated, user } = storeToRefs(authStore);
     
     function openLoginPopup() {
         popupStore.openLoginPopup();
     }
-    async function check() {
-        await authStore.setUserName();
-    }
 
     onMounted: {
         if (process.client) {
-            authStore.setUserName();
+            authStore.setUser();
         }
     }
 </script>

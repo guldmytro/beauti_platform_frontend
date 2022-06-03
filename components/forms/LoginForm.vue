@@ -57,7 +57,7 @@
         loginError.value = false;
         const auth = await authStore.authenticate(getCredentials(), rememberMe.value);
         if (auth.status === 200) { // we logged in
-            await authStore.setUserName();
+            await authStore.setUser();
             UsePopupStore().loginPopup = false;
             resetForm();
         } else {
